@@ -2,6 +2,7 @@ import { Component } from 'react';
 
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
@@ -24,23 +25,38 @@ class RandomChar extends Component {
     onCharLoaded = (char) => {
         this.setState({
             char,
-            loading: false
+            loading: false,
+            error: false,
         })
     }
 
     updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
         this.marvelService
-          .getCharacter(id)
-          .then(this.onCharLoaded)
+            .getCharacter(id)
+            .then(this.onCharLoaded)
+            .catch(this.onError)
+
+    }
+
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true,
+        })
     }
 
     render() {
-        const { char, loading } = this.state;
+        const { char, loading, error } = this.state;
+        const errorMessage = error ? <ErrorMessage /> : null;
+        const spinner = loading ? <Spinner /> : null;
+        const content = !(loading || error) ? <View char={char} /> : null;
 
         return (
             <div className="randomchar">
-                { loading ?  <Spinner /> : <View char={char} />}
+                {errorMessage}
+                {spinner}
+                {content}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br/>
@@ -68,13 +84,7 @@ const View = ({char}) => {
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
-                    {
-                        description
-                            ? (description.length > 120)
-                            ? `${description.slice(0, 120)}...`
-                            : description
-                            : 'Description for this character not found'
-                    }
+                    {description}
                 </p>
                 <div className="randomchar__btns">
                     <a href={homepage} className="button button__main">
