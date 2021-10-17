@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-
-import './charList.scss';
 import MarvelService from "../../services/MarvelService";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Spinner from "../spinner/Spinner";
+
+import './charList.scss';
 
 class CharList extends Component {
 
@@ -67,9 +67,7 @@ class CharList extends Component {
 
         const errorMsg = error ? <ErrorMessage /> : null;
         const spinner = loading ? <Spinner /> : null;
-        const content = !(loading || error)
-            ? items
-            : null
+        const content = !(loading || error) ? items : null;
 
         return (
             <div className="char__list">
